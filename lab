@@ -1,0 +1,131 @@
+#include <cstdlib>
+#include <iostream>
+#include <math.h>
+#include<conio.h>
+#include <string>
+#include<iomanip>
+
+using namespace std;
+
+int Delmo(int d) {
+  long double dlm;
+  dlm = pow(((pow(10, d) - 1) / 9), 2);
+  return dlm;
+}
+bool check_polindrom(string word)
+{
+	int len = word.length();
+	for(int i = 0; i < len/2; ++i)
+	{
+		if(word[i] != word[len-i-1])
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+int isPal(int n) {
+  int p, k, m;
+  k = 0;
+  m = n;
+  while (m > 0) {
+    p = m % 10;
+    m = m / 10;
+    k = k * 10 + p;
+  }
+  return (n == k);
+}
+
+void Sttri(int n) {
+
+  for (int i = 1; i <= n; i++) {
+    cout << i;
+  }
+  for (int i = n - 1; i > 0; i--) {
+    cout << i;
+  }
+
+}
+
+int main(int argc, char * argv[]){
+int n,m,k;
+int a, b;
+int num, key;
+string str;
+do{
+        system("cls");
+cout << " doriti sa verificati daca un numar este  palindrom apasati 1"<< endl;
+cout << " daca doriti sa aflati cum arata un numar Demlo apasati 2"<< endl;
+cout << " daca doriti sa aflati toate numerele polindroame din intervalul [a; b], apasati 3"<< endl;
+cout << " daca doriti sa aflati primele n numere polindroame apasati 4"<< endl;
+cout << " daca doriti sa aflati cel mai mare număr polindroame apasati 5"<< endl;
+cout << " daca doriti sa aflati daca un cuvint este polindrom apasati 6"<< endl;
+cout << " Alegeti optiunea ==> ";
+cin >> key;
+switch (key) {
+case 1:
+    system("cls");
+  cout << "n ( ar fi de dorit ca sa fie mai mare ca 10) = ";
+  cin >> n;
+  isPal(n) ? cout << "yes" : cout << "no" << endl;
+  getch();
+  break;
+case 2:
+    system("cls");
+    cin >> n;
+    cout << "ca numarul Delmo arata - " << /*Delmo (n)*/ endl;
+    Sttri(n);
+    getch();
+    break;
+case 3:
+    system("cls");
+    cout << "introduceti interval de la pina la incepind de la 10 - ";
+    cin >> a >> b;
+    if ((a < b) && (a > 9)) {
+        for (int i = a; i <= b; i++) {
+        if (isPal(i)) {
+        cout << i << "   ";
+    }
+  }
+} else
+  cout << "!!!!!! VA RUGAM introduceti interval de la pina la incepind de la 10 - ";
+  getch();
+  break;
+  case 4:
+      system("cls");
+      cout << "numar de polindroame - " << endl;
+    cin >> num;
+     k = 0;
+     m = 10;
+    while (k <= num) {
+        if (isPal(m)) {
+        k = k + 1;
+        cout << m << "  ";
+                        }
+             m = m + 1;
+}
+getch();
+break;
+case 5:
+    system("cls");
+    cout<<" Tot depinde de tipul de date dar Самое большое число-перевертыш нашел московский школьник Андрей Щебетов- 1999291987030606810";
+    getch();
+break;
+case 6: system ("cls");
+cout << "Enter the word: ";
+	cin >> str;
+	if(check_polindrom(str))
+	{
+		cout << "Word is polindrom.";
+	}
+	else
+	{
+		cout << "Word is not polindrom";
+	}
+ getch();
+break;
+}}while(key!=0);
+
+return 0;
+}
