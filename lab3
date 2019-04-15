@@ -1,0 +1,121 @@
+#include <iostream>
+#include <stdio.h>
+#include <iomanip>
+#include <algorithm>
+#include <vector>
+#include <cstdlib>
+#include <math.h>
+
+using namespace std;
+
+void crreate_massiv(int *a, int n) {
+    cout << "Introduceti inaltimele" << endl;
+    for (int i = 0; i < n; ++i) {
+        cin >> a[i];
+    }
+}
+
+void show_list(int *a, int n) {
+    cout << " Tablou" << endl;
+    std::sort(a, a + n);
+    for (int i = 0; i < n; ++i)
+        std::cout << a[i] << ' ';
+}
+
+int *show_list2(int *a, int n) {
+    int *a2 = new int[n + 1];
+    int b;
+    cout << endl;
+    cout << " element nou ";
+    cin >> b;
+    for (int i = 0; i < n + 1; ++i) {
+        a2[i] = a[i];
+    }
+    delete[] a;
+    a2[n] = b;
+    std::sort(a2, a2 + n + 1);
+    for (int i = 0; i < n + 1; ++i)
+        std::cout << a2[i] << ' ';
+    return a2;
+}
+
+void del_el(int *a2, int n) {
+    int el;
+    cout << endl;
+    cout << "  care element stergem  ";
+    cin >> el;
+    el--;
+    for (int i = el; i < n; i++) {
+        a2[i] = a2[i + 1];
+    }
+    for (int i = 0; i < n; ++i) {
+        cout << a2[i] << " ";
+    }
+}
+
+void rotirea(int *a2, int n, int k) {
+    for (int j = 0; j < k - j; j++) {
+        a2[j] = a2[k];
+    };
+    for (int i = 0; i < n; ++i) {
+        cout << a2[i] << " ";
+    }
+}
+int  egal = 0;
+int poisk(int *a2, int n, int numar1, int numar2) {
+    for (int k = 0; k < n; k++) {
+        if ((a2[k] > numar1) && (a2[k] < numar2)) {
+            egal++;
+        }
+    }
+    return egal;
+}
+
+void min_max(int *a2, int n) {
+    //находим минимум
+    int min = a2[0];
+    for (int i = 1; i < n; i++) {
+        if (a2[i] < min) {
+            min = a2[i];
+        };
+    }
+    //находим максимум
+    int max = 0;
+    for (int k = 0; k < n; k++) {
+        if (a2[k] > max) {
+            max = a2[k];
+        };
+    }
+    //находим средне арифметическое
+    double sum = 0;
+    for (int r = 0; r < n; r++) {
+        sum = sum + a2[r];
+    };
+    double media;
+    media = sum / n;
+    cout << endl;
+    cout << "max - " << max << " " << "min - " << min << endl;
+    cout << "media este " << setprecision(3) << media << " " << endl;
+}
+
+
+int main() {
+    int n, k;
+    int numar1, numar2;
+    cout << "Numarul de participanti  - ";
+    cin >> n;
+
+    int *a = new int[n];
+    crreate_massiv(a, n);
+    show_list(a, n);
+    int *a2 = show_list2(a, n);
+    del_el(a2, n);
+    min_max(a2, n);
+    cout << "Introduceti limite - ";
+    cin >> numar1 >> numar2;
+    cout << "nr. de sportivi cu inaltimea in limitele indicate - " << poisk(a2, n, numar1, numar2) << endl;
+    cout << "Numarul de >>  - ";
+    cin >> k;
+    rotirea(a2, n, k);
+    return 0;
+}
