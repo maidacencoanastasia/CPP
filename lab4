@@ -1,0 +1,177 @@
+#include <iostream>
+#include <cstdlib>
+#include <conio.h>
+#include <stdio.h>
+#include <iomanip>
+#include <locale>
+#include <cmath>
+
+#define N 100
+
+#include <ctime>
+
+//
+// Создание матрицы
+//
+int **Create(size_t n, size_t m) {
+    int **M = new int *[n];
+    for (size_t i = 0; i < n; ++i) {
+        M[i] = new int[m];
+    }
+    return M;
+}
+
+//
+// Удаление матрицы
+//
+void Free(int **M, size_t n) {
+    for (size_t i = 0; i < n; ++i) {
+        delete[] M[i];
+    }
+    delete[] M;
+}
+
+//
+//---- ввод матрицы--------------------------------------
+//
+void Input(int **M, size_t n, size_t m) {
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j = 0; j < m; ++j) {
+            std::cout << "M[" << i << "][" << j << "] = ";
+            std::cin >> M[i][j];
+        }
+    }
+}
+
+//
+// заполнение матрицы случайными числами из диапазона  -----------
+//
+void FillRandomNumbers(int **matrix, const size_t rows, const size_t columns, int min, int max) {
+    srand((unsigned int) time(0)); // инициализируем ПГСЧ
+
+    for (size_t row = 0; row < rows; row++)
+        for (size_t column = 0; column < columns; column++)
+            matrix[row][column] = min + rand() % (max - min); // присваиваем СЧ
+}
+
+//
+//-------- Печать матрицы ------------------------------------------------
+//
+void Print(int **M, size_t n, size_t m) {
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j = 0; j < m; ++j) {
+            std::cout << M[i][j] << ' ';
+        }
+        std::cout << std::endl;
+    }
+}
+
+//
+// пример обработки матрицы - подсчет сумм в каждой строке
+//
+void Process(int **M, float *Sum, size_t n, size_t m) {
+    for (size_t i = 0; i < n; ++i) {
+        Sum[i] = 0;
+        for (size_t j = 0; j < m; ++j) {
+            Sum[i] = (Sum[i] + M[i][j]);
+        }
+        Sum[i] = Sum[i] / m;
+    }
+}
+
+void Work(int **M, size_t n, size_t m, int k, int l) {
+
+    int *t = M[k];
+    M[k] = M[l];
+    M[l] = t;
+
+}
+
+void AddRow(int **M, float *Sum, size_t &n, size_t m) {
+
+    ++n;
+    int **Mt = Create(n, m);
+    for (size_t i = 0; i < n - 1; ++i) {
+        for (size_t j = 0; j < m; ++j) {
+            Mt[i][j] = M[i][j];
+        }
+
+    }
+    for (size_t j = 0; j < m; ++j) {
+        Mt[n][j] = 1;
+    }
+    Free(M, n);
+
+}
+
+void MinMax(int **M, size_t n, size_t m) {
+    size_t max = M[0][0];
+    size_t min = max;
+    size_t str, stl, mstr, mstl;
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < m; j++) {
+            if (M[i][j] > max) {
+                max = M[i][j];
+                str = i + 1;
+                stl = j + 1;
+            }
+            if (M[i][j] < min) {
+                min = M[i][j];
+                mstr = i + 1;
+                mstl = j + 1;
+            }
+        }
+    }
+    std::cout << min << " - minimum ;Pozition " << mstr << ":" << mstl << std::endl;
+    std::cout << max << " - maximum ;Pozition " << str << ":" << stl << std::endl;
+}
+
+int main() {
+    setlocale(LC_ALL, "Rus"); // установление русской локали (windows)
+
+    size_t n, m;
+    int l1, l2;
+
+    // вводим размерность матрицы
+    std::cout << "Введите количество строк матрицы: ";
+    std::cin >> n;
+    std::cout << "Введите количество столбцов матрицы: ";
+    std::cin >> m;
+
+    // выделяем память под матрицу
+    int **A = Create(n, m);
+
+    // ввод матрицы
+    //Input( A, n, m );
+    // заполнение случайными числами (вместо ввода)
+    FillRandomNumbers(A, n, m, 100, 240);
+    // Вывод матрицы
+    Print(A, n, m);
+    std::cout << std::endl;
+    // обработка матрицы
+    float *S = new float[n]; // Вектор результата
+    Process(A, S, n, m);
+
+    // вывод результата
+    std::cout << "rows media" << std::endl;
+    for (size_t i = 0; i < n; i++)
+        std::cout << S[i] << ' ';
+    std::cout << std::endl;
+
+
+    std::cout << "Introduceti linii pentru schimbarea - ";
+    std::cin >> l1 >> l2;
+    Work(A, n, m, --l1, --l2);
+    Print(A, n, m);
+    MinMax(A, n, m);
+    AddRow(A, S, n, m);
+    Print(A, n, m);
+    // освобождаем память, выделенную под матрицу и вектор
+    delete[] S;
+    Free(A, n);
+
+    // ждём нажатия клавиши перед выходом из приложения (windows)
+    //system( "pause" );
+
+    return 0;
+}
