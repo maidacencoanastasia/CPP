@@ -184,13 +184,21 @@ void MinMax(int **M, int n, int m)
     std::cout << min << " - minimum ;Pozition " << mstr << ":" << mstl << std::endl;
     std::cout << max << " - maximum ;Pozition " << str << ":" << stl << std::endl;
 }
+void Work(int **M, size_t n, size_t m, int k, int l)
+{
+
+    int *t = M[k];
+    M[k] = M[l];
+    M[l] = t;
+
+}
 
 int main()
 {
     setlocale(LC_ALL, "Rus");
     int row ;
     int col ;
-    int poz;
+    int poz, l1, l2;
     cout << "Введите количество строк матрицы: ";
     cin >> row;
     cout << "Введите количество столбцов матрицы: ";
@@ -213,6 +221,10 @@ int main()
 
     MinMax(Array,row + 1,col);
 
+    cout << "\nIntroduceti linii pentru schimbarea - ";
+    cin >> l1 >> l2;
+    Work(Array,row + 1,col, --l1, --l2);
+    Print(Array, row + 1, col);
     for (int i = 0; i < row+1; i++)
         sort(Array, i, 0, col - 1);
     cout << "Массив отсорртированный по возрастанию columns - "<< endl;
