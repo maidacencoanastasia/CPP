@@ -1,0 +1,227 @@
+#include <iostream>
+#include <time.h>
+#include <cstdlib>
+#include <conio.h>
+#include <stdio.h>
+#include <iomanip>
+#include <locale>
+#include <cmath>
+#include <ctime>
+
+using namespace  std;
+
+int** Create(int row, int col)
+{
+    int** Arr = new int*[row];
+    for (int i = 0; i < row; i++)
+    {
+        Arr[i] = new int[col];
+    }
+    return Arr;
+}
+
+void Fill(int** Arr, int row, int col)
+{
+    for (int i = 0; i < row; i++)
+    {
+        for (int j = 0; j < col; j++)
+        {
+            Arr[i][j] = 130 + rand() %(220-100);
+        }
+    }
+}
+
+void Print(int** Arr, int row, int col)
+{
+    for (int i = 0; i < row; i++)
+    {
+        for (int j = 0; j < col; j++)
+        {
+            cout << Arr[i][j] << "\t";
+        }
+        cout << "\n";
+    }
+}
+
+void FillOne(int* element, int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        element[i] = 130 + rand() %(220-100);
+    }
+}
+
+void FillOne2(int **M, int *Sum, int n, int m)
+{
+    for (int i = 0; i < n; ++i)
+    {
+        Sum[i] = 0;
+        for (int j = 0; j < m; ++j)
+        {
+            Sum[i] = (Sum[i] + M[i][j]);
+        }
+        Sum[i] = Sum[i] / m;
+    }
+}
+void PrintOne(int* element, int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        cout << element[i] << "\t";
+    }
+    cout << "\t";
+}
+
+void AddRow(int**&Arr, int row, int col, int position, int* element)
+{
+    int** tmpArr = new int*[row + 1];
+    for (int i = 0, j = 0; i < row + 1; i++)
+    {
+        if (i == position)
+        {
+            tmpArr[i] = element;
+        }
+        else
+        {
+            tmpArr[i] = Arr[j];
+            j++;
+        }
+    }
+    delete[] Arr;
+    row++;
+    Arr = tmpArr;
+}
+
+void Remove(int** Arr, int row)
+{
+    for (int i = 0; i < row; i++)
+    {
+        delete[] Arr[i];
+    }
+    delete[] Arr;
+}
+void sort(int **p, int iCol, int iBegin, int iEnd)
+{
+    int i = iBegin, j = iEnd;
+    int iAvg = p[(iBegin + iEnd) / 2][iCol];
+
+    do
+    {
+        while (p[i][iCol] < iAvg) i++;
+        while (iAvg < p[j][iCol]) j--;
+
+        if (p[i][iCol] > p[j][iCol])
+        {
+            int t = p[i][iCol];
+            p[i][iCol] = p[j][iCol];
+            p[j][iCol] = t;
+        }
+
+        i++;
+        j--;
+    }
+    while (i < j);
+
+    if (i == j)
+    {
+        i++;
+        j--;
+    }
+
+    if (iBegin < j)
+        sort(p, iCol, iBegin, j);
+
+    if (i < iEnd)
+        sort(p, iCol, i, iEnd);
+
+}
+void sortrow(int **p, int n, int m)
+{
+    int temp=0;
+    for(int c=0; c<=(n*m); c++) //колличество проходов
+    {
+        for(int i=0; i<n; i++)
+        {
+            for(int j=0; j<m-1; j++)
+            {
+                if(p[i][j]>p[i][j+1])
+                {
+                    temp=p[i][j];
+                    p[i][j]=p[i][j+1];
+                    p[i][j+1]=temp;
+                }
+            }
+
+        }
+    }
+}
+
+
+
+void MinMax(int **M, int n, int m)
+{
+    int max = M[0][0];
+    int min = max;
+    int str, stl, mstr, mstl;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < m; j++)
+        {
+            if (M[i][j] > max)
+            {
+                max = M[i][j];
+                str = i + 1;
+                stl = j + 1;
+            }
+            if (M[i][j] < min)
+            {
+                min = M[i][j];
+                mstr = i + 1;
+                mstl = j + 1;
+            }
+        }
+    }
+    std::cout << min << " - minimum ;Pozition " << mstr << ":" << mstl << std::endl;
+    std::cout << max << " - maximum ;Pozition " << str << ":" << stl << std::endl;
+}
+
+int main()
+{
+    setlocale(LC_ALL, "Rus");
+    int row ;
+    int col ;
+    int poz;
+    cout << "Введите количество строк матрицы: ";
+    cin >> row;
+    cout << "Введите количество столбцов матрицы: ";
+    cin >> col;
+    int** Array = Create(row, col);
+    Fill(Array, row, col);
+    cout << "Массив ИЗНАЧАЛЬНЫЙ - "<< endl;
+    Print(Array, row, col);
+    cout << endl;
+
+    int* element = new int[col];
+    FillOne2(Array, element, row, col);
+    cout << "Строка для добавления - "<< endl;
+    PrintOne(element, col);
+    cout << endl << endl;
+    cout << "Введите позицию для всавки строки - ";
+    cin>>poz;
+    AddRow(Array, row, col, poz-1, element);
+    Print(Array, row + 1, col);
+
+    MinMax(Array,row + 1,col);
+
+    for (int i = 0; i < row+1; i++)
+        sort(Array, i, 0, col - 1);
+    cout << "Массив отсорртированный по возрастанию columns - "<< endl;
+    Print(Array, row + 1, col);
+    cout << "Массив отсорртированный по возрастанию rows - "<< endl;
+    sortrow(Array,row+1,col);
+    Print(Array, row + 1, col);
+
+
+    //Remove(Array, row);
+    return 0;
+}
