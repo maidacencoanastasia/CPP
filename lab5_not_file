@@ -1,0 +1,47 @@
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int main()
+{
+
+    setlocale(LC_ALL, "Rus");
+    string a, b;
+
+    //Объявляем строковые переменные
+    unsigned int N, k;
+    cout << "Введите строку из слов (латинские буквы):" << endl;
+    getline(cin, a); //Вводим строку
+
+    cout << "Введите число:" << endl
+         << "N = ";
+    cin >> N;
+    stringstream str(a); //Помещаем строку в поток
+    k = 0;
+    while (str >> b) //Пробегаем по строке
+    {
+        if (b.length() > N)
+            k++; //Подсчитываем количество слов
+    }
+    if (k)
+        cout << "Искомое количество слов: " << k << endl;
+
+    else
+        cout << "Искомых слов не найдено!" << endl;
+    cin.get();
+
+    istringstream ist(a);
+    vector< string > vec_word;
+    int cnt = 0;
+    while(ist >> a)
+    {
+        vec_word.push_back(a);
+        ++cnt;
+    }
+    cout <<"Count words: " << cnt << std::endl;
+
+    return 0;
+}
