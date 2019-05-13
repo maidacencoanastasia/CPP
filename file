@@ -1,0 +1,193 @@
+#include <stdio.h>
+#include <malloc.h>
+#include <string.h>
+#include <ctype.h>
+#include <locale.h>
+#define MAX_SIZE   256
+typedef unsigned char uchar;
+ 
+typedef struct _word {
+    struct _word* next;
+    const  uchar* ptr;
+    unsigned      cnt;
+} sword;
+ 
+typedef struct {
+    sword* arr[MAX_SIZE];
+    int    cnt;
+} htab;
+ 
+static unsigned __calc_hash(const uchar* s);
+static int __scmp(const uchar* s1, const uchar* s2);
+static char* readfile(const char* fn);
+static void  sword_fill(htab* ht, uchar* s);
+ 
+static void   htab_init(htab* ht);
+static int    htab_add(htab* ht, const uchar* w);
+static void   htab_clear(htab* ht);
+static sword* htab_min(htab* ht);
+static void   htab_print(FILE* _out, htab* ht, int num);
+ 
+int main(void){
+    htab  ht;
+    char* buf = readfile("file.txt");
+    if(buf == NULL)
+        return 1;
+ 
+    setlocale(LC_CTYPE, "Russian_Russia.1251");
+    sword_fill(&ht, (uchar*)buf);
+    htab_print(stdout, &ht, 20);
+ 
+    htab_clear(&ht);
+    free(buf);
+    return 0;
+}
+ 
+//инициализация
+static void htab_init(htab* ht){
+    int i;
+    for(i = 0; i < MAX_SIZE; ++i)
+        ht->arr[i] = NULL;
+    ht->cnt = 0;
+}
+ 
+//добавление
+static int htab_add(htab* ht, const uchar* w){
+    sword*   p;
+    unsigned key = __calc_hash(w);
+ 
+    for(p = ht->arr[key]; p != NULL; p = p->next){
+        if(__scmp(p->ptr, w)){
+            ++(p->cnt);
+            return 0;
+        }
+    }
+ 
+    p = (sword*)malloc(sizeof(sword));
+    if(p != NULL){
+        p->cnt  = 1;
+        p->ptr  = w;
+        p->next = ht->arr[key];
+        ht->arr[key] = p;
+        ++(ht->cnt);
+    }
+    return (p != NULL);
+}
+ 
+//минимум
+static sword* htab_min(htab* ht){
+    int    i;
+    sword* p;
+    for(i = 0; i < MAX_SIZE; ++i){
+        if((ht->arr[i] != NULL) && (ht->arr[i]->cnt > 0))
+            break;
+    }
+    if(i == MAX_SIZE)
+        return NULL;
+ 
+    p = ht->arr[i];
+    for(; i < MAX_SIZE; ++i){
+        if((ht->arr[i] != NULL) && (ht->arr[i]->cnt > p->cnt))
+            p = ht->arr[i];
+    }
+    return p;
+}
+ 
+//вывод результата 
+static void htab_print(FILE* _out, htab* ht, int num){
+    int    i;
+    sword* p;
+    if(ht->cnt < num)
+        num = ht->cnt;
+ 
+    for(i = 0; i < num; ++i){
+        if((p = htab_min(ht)) != NULL){
+            fprintf(_out, "%s(%d)\n", p->ptr, p->cnt);
+            p->cnt = 0;
+        }
+    }
+    fflush(_out);
+}
+ 
+//удаление всех
+static void htab_clear(htab* ht){
+    int    i;
+    sword* t;
+    for(i = 0; i < MAX_SIZE; ++i){
+        while(ht->arr[i] != NULL){
+            t = ht->arr[i];
+            ht->arr[i] = ht->arr[i]->next;
+            free(t);
+        }
+    }
+    ht->cnt = 0;
+}
+ 
+//...
+ 
+static void sword_fill(htab* ht, uchar* s){ 
+    uchar* p;
+    htab_init(ht);
+ 
+    while(*s){
+        while(*s && !isalnum(*s))
+            ++s;
+        
+        for(p = s; isalnum(*p); ++p)
+            ;
+        if(s != p){
+            if(*p)
+                *p++ = '\0';
+            htab_add(ht, s);
+        }
+        s = p;
+    }
+}
+ 
+static unsigned __calc_hash(const uchar* s){
+    unsigned n = 0;
+    while(*s)
+        n += (unsigned)toupper(*s++);
+    return n % MAX_SIZE;
+}
+ 
+static int __scmp(const uchar* s1, const uchar* s2){
+    while(*s1 && (toupper(*s1) == toupper(*s2))){
+        ++s1;
+        ++s2;
+    }
+    return (!*s1 && !*s2);
+}
+ 
+static char* readfile(const char* fn){
+    char*  s;
+    long   n;
+    size_t i;
+    FILE*  fp = fopen(fn, "rb");
+    if(fp == NULL)
+        return NULL;
+ 
+    fseek(fp, 0L, SEEK_END);
+    n = ftell(fp);
+    if(n <= 1L){
+        fclose(fp);
+        return NULL;
+    }
+    
+    s = (char*)malloc((n + 1) * sizeof(char));
+    if(s == NULL){
+        fclose(fp);
+        return NULL;
+    }
+    fseek(fp, 0L, SEEK_SET);
+    i = fread(s, sizeof(char), (size_t)n, fp);
+    fclose(fp);
+    
+    if(i == (size_t)n)
+        s[i] = '\0';
+    else {
+        free(s);
+        s = NULL;
+    }
+    return s;
+}
