@@ -9,18 +9,17 @@
 #include <ctime>
 
 using namespace  std;
-
-int** Create(int row, int col)
+float** Create(int row, int col)
 {
-    int** Arr = new int*[row];
+    float** Arr = new float*[row];
     for (int i = 0; i < row; i++)
     {
-        Arr[i] = new int[col];
+        Arr[i] = new float[col];
     }
     return Arr;
 }
 
-void Fill(int** Arr, int row, int col)
+void Fill(float** Arr, int row, int col)
 {
     for (int i = 0; i < row; i++)
     {
@@ -31,7 +30,7 @@ void Fill(int** Arr, int row, int col)
     }
 }
 
-void Print(int** Arr, int row, int col)
+void Print(float** Arr, int row, int col)
 {
     for (int i = 0; i < row; i++)
     {
@@ -43,7 +42,7 @@ void Print(int** Arr, int row, int col)
     }
 }
 
-void FillOne(int* element, int size)
+void FillOne(float* element, int size)
 {
     for (int i = 0; i < size; i++)
     {
@@ -51,19 +50,32 @@ void FillOne(int* element, int size)
     }
 }
 
-void FillOne2(int **M, int *Sum, int n, int m)
+void FillOneMedColumn(float **M, float *Sum, int n, int m)
+{
+    for (int j = 0; j < m; ++j)
+    {
+        Sum[j] = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            Sum[j] = (Sum[j] + M[i][j]);
+        }
+        Sum[j] = Sum[j] / n;
+    }
+}
+float FillOneMedRow(float **M, float *Med, int n, int m)
 {
     for (int i = 0; i < n; ++i)
     {
-        Sum[i] = 0;
+        Med[i] = 0;
         for (int j = 0; j < m; ++j)
         {
-            Sum[i] = (Sum[i] + M[i][j]);
+            Med[i] = (Med[i] + M[i][j]);
         }
-        Sum[i] = Sum[i] / m;
+        Med[i] = Med[i] / m;
     }
+    return *Med;
 }
-void PrintOne(int* element, int size)
+void PrintOne(float* element, int size)
 {
     for (int i = 0; i < size; i++)
     {
@@ -72,9 +84,9 @@ void PrintOne(int* element, int size)
     cout << "\t";
 }
 
-void AddRow(int**&Arr, int row, int col, int position, int* element)
+void AddRow(float**&Arr, int &row, int col, int position, float* element)
 {
-    int** tmpArr = new int*[row + 1];
+    float** tmpArr = new float*[row + 1];
     for (int i = 0, j = 0; i < row + 1; i++)
     {
         if (i == position)
@@ -91,8 +103,24 @@ void AddRow(int**&Arr, int row, int col, int position, int* element)
     row++;
     Arr = tmpArr;
 }
+float **ADDCOL(float **mas,int n,int &m,float *Med)
+{
+    float **t = new float*[n];
+    for(int i = 0; i < n; i++)
+        t[i] = new float[m+1];
+    for(int i = 0; i < n; i++)
+    {
+        for(int j=0; j < m; j++)
+        {
+            t[i][j] = mas[i][j];
+        }
+        t[i][m] = Med[i];
+    }
+    m++;
+    return t;
 
-void Remove(int** Arr, int row)
+}
+void Remove(float** Arr, int row)
 {
     for (int i = 0; i < row; i++)
     {
@@ -100,10 +128,10 @@ void Remove(int** Arr, int row)
     }
     delete[] Arr;
 }
-void sort(int **p, int iCol, int iBegin, int iEnd)
+void sort(float **p, int iCol, int iBegin, int iEnd)
 {
     int i = iBegin, j = iEnd;
-    int iAvg = p[(iBegin + iEnd) / 2][iCol];
+    float iAvg = p[(iBegin + iEnd) / 2][iCol];
 
     do
     {
@@ -112,7 +140,7 @@ void sort(int **p, int iCol, int iBegin, int iEnd)
 
         if (p[i][iCol] > p[j][iCol])
         {
-            int t = p[i][iCol];
+            float t = p[i][iCol];
             p[i][iCol] = p[j][iCol];
             p[j][iCol] = t;
         }
@@ -135,9 +163,9 @@ void sort(int **p, int iCol, int iBegin, int iEnd)
         sort(p, iCol, i, iEnd);
 
 }
-void sortrow(int **p, int n, int m)
+void sortrow(float **p, int n, int m)
 {
-    int temp=0;
+    float temp=0;
     for(int c=0; c<=(n*m); c++) //колличество проходов
     {
         for(int i=0; i<n; i++)
@@ -158,10 +186,10 @@ void sortrow(int **p, int n, int m)
 
 
 
-void MinMax(int **M, int n, int m)
+void MinMax(float **M, int n, int m)
 {
-    int max = M[0][0];
-    int min = max;
+    float max = M[0][0];
+    float min = max;
     int str, stl, mstr, mstl;
     for (int i = 0; i < n; i++)
     {
@@ -184,10 +212,9 @@ void MinMax(int **M, int n, int m)
     std::cout << min << " - minimum ;Pozition " << mstr << ":" << mstl << std::endl;
     std::cout << max << " - maximum ;Pozition " << str << ":" << stl << std::endl;
 }
-void Work(int **M, size_t n, size_t m, int k, int l)
+void Permutari(float **M, size_t n, size_t m, int k, int l)
 {
-
-    int *t = M[k];
+    float *t = M[k];
     M[k] = M[l];
     M[l] = t;
 
@@ -203,36 +230,45 @@ int main()
     cin >> row;
     cout << "Введите количество столбцов матрицы: ";
     cin >> col;
-    int** Array = Create(row, col);
+    float** Array = Create(row, col);
     Fill(Array, row, col);
     cout << "Массив ИЗНАЧАЛЬНЫЙ - "<< endl;
     Print(Array, row, col);
     cout << endl;
 
-    int* element = new int[col];
-    FillOne2(Array, element, row, col);
+    float* element = new float[col];
+    FillOneMedColumn(Array, element, row, col);
     cout << "Строка для добавления - "<< endl;
     PrintOne(element, col);
+
     cout << endl << endl;
-    cout << "Введите позицию для всавки строки - ";
+    cout << "Введите позицию для вставки строки - ";
     cin>>poz;
     AddRow(Array, row, col, poz-1, element);
-    Print(Array, row + 1, col);
+    Print(Array, row, col);
+    cout << endl;
+    cout << "\nКолонка для добавления - "<< endl;
+    float* element_row = new float[col];
+    FillOneMedRow(Array, element_row, row, col);
+    PrintOne(element_row, col);
+    cout << "\n\nВставка столбца - "<< endl;
+    Array=ADDCOL(Array,row,col,element_row);
+    Print(Array, row, col);
+    cout << endl;
 
-    MinMax(Array,row + 1,col);
+    MinMax(Array,row, col);
 
     cout << "\nIntroduceti linii pentru schimbarea - ";
     cin >> l1 >> l2;
-    Work(Array,row + 1,col, --l1, --l2);
-    Print(Array, row + 1, col);
-    for (int i = 0; i < row+1; i++)
+    Permutari(Array,row,col, --l1, --l2);
+    Print(Array, row, col);
+    for (int i = 0; i < row; i++)
         sort(Array, i, 0, col - 1);
-    cout << "Массив отсорртированный по возрастанию columns - "<< endl;
-    Print(Array, row + 1, col);
-    cout << "Массив отсорртированный по возрастанию rows - "<< endl;
-    sortrow(Array,row+1,col);
-    Print(Array, row + 1, col);
-
+    cout << "Массив отсортированный по возрастанию columns - "<< endl;
+    Print(Array, row, col);
+    cout << "Массив отсортированный по возрастанию rows - "<< endl;
+    sortrow(Array,row, col);
+    Print(Array, row, col);
 
     //Remove(Array, row);
     return 0;
